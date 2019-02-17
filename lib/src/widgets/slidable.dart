@@ -1046,7 +1046,9 @@ class SlidableState extends State<Slidable>
           !_dragUnderway) {
         if (widget.slideToDismissDelegate.onWillDismiss == null ||
             await widget.slideToDismissDelegate.onWillDismiss(actionType)) {
-          _startResizeAnimation();
+          if (mounted) {
+            _startResizeAnimation();
+          }
         } else {
           _dismissing = false;
           if (widget.slideToDismissDelegate?.closeOnCanceled == true) {
@@ -1137,11 +1139,12 @@ class SlidableState extends State<Slidable>
           // we've been dragged aside, and are now resizing.
           assert(() {
             if (_resizeAnimation.status != AnimationStatus.forward) {
-              assert(_resizeAnimation.status == AnimationStatus.completed);
+              // Do not throw error if widget already dismissed, cause issues with async lists
+              /*assert(_resizeAnimation.status == AnimationStatus.completed);
               throw new FlutterError(
                   'A dismissed Slidable widget is still part of the tree.\n'
                   'Make sure to implement the onDismissed handler and to immediately remove the Slidable\n'
-                  'widget from the application once that handler has fired.');
+                  'widget from the application once that handler has fired.');*/
             }
             return true;
           }());
